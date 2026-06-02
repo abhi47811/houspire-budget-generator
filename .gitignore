@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+
+# Node
+node_modules/
+_docx_tmp.js
+
+# Streamlit
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+
+# OMC internal
+.omc/
