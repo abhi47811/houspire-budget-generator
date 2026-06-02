@@ -175,4 +175,6 @@ def generate_boq(rooms, city, pincode, tier):
         system=BOQ_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": _build_user_prompt(rooms, city, pincode, tier)}],
     )
-    return _parse_boq_response(resp.content[0].text)
+    raw = resp.content[0].text
+    rows, sources = _parse_boq_response(raw)
+    return rows, sources, raw  # raw exposed for debug when rows == 0

@@ -162,7 +162,7 @@ if st.button("⚡ Generate BOQ + Vendors (parallel)", disabled=not can_generate,
             with ThreadPoolExecutor(max_workers=2) as executor:
                 fut_boq    = executor.submit(generate_boq, analyses, city, pincode, tier)
                 fut_vendor = executor.submit(generate_vendors, analyses, city, pincode, tier)
-                rows, sources = fut_boq.result()
+                rows, sources, boq_raw = fut_boq.result()
                 vendors, notes = fut_vendor.result()
         except Exception as exc:
             st.error(f"API error: {exc}")
@@ -174,6 +174,8 @@ if st.button("⚡ Generate BOQ + Vendors (parallel)", disabled=not can_generate,
     # ── BOQ outputs ────────────────────────────────────────────────────────
     if not rows:
         errors.append("No BOQ rows returned.")
+        with st.expander("🔍 Debug: Raw Claude BOQ response"):
+            st.text(boq_raw[:2000])
     else:
         with tempfile.TemporaryDirectory() as tmpdir:
             xlsx_name = f"{safe}_BOQ_{city}.xlsx"
@@ -248,7 +250,7 @@ col_boq, col_vendor = st.columns(2)
 with col_boq:
     if st.button("📊 BOQ only", disabled=not can_generate):
         with st.spinner("Generating BOQ…"):
-            rows, sources = generate_boq(analyses, city, pincode, tier)
+            rows, sources, boq_raw = generate_boq(analyses, city, pincode, tier)
         if rows:
             safe = re.sub(r"[^A-Za-z0-9_]", "", client_name.replace(" ", "_"))
             with tempfile.TemporaryDirectory() as tmpdir:
